@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { TrendingUp, Users, Heart, Zap, MapPin, Clock } from "lucide-react";
 import { Analytics } from "../../../../shared/schema";
+import { ErrorBoundary } from "../ErrorBoundary";
 
 interface AdvancedAnalyticsProps {
   userId: string;
@@ -59,6 +60,67 @@ export function AdvancedAnalytics({ userId }: AdvancedAnalyticsProps) {
     { day: 'Fri', matches: 9, views: 78, swipes: 95 },
     { day: 'Sat', matches: 12, views: 94, swipes: 87 },
     { day: 'Sun', matches: 8, views: 67, swipes: 76 }
+  ];
+
+  return (
+    <ErrorBoundary>
+      <div className="space-y-6">
+        {/* Advanced Metrics Grid */}</div>
+    </ErrorBoundary>
+  );
+}
+
+function AdvancedAnalyticsContent({ userId }: AdvancedAnalyticsProps) {
+  const { data: analytics } = useQuery<Analytics>({
+    queryKey: ["/api/analytics", userId],
+  });
+
+  const matchRate = ((analytics?.matchRate || 0) / 100).toFixed(1);
+  const profileScore = analytics?.profileScore || 0;
+
+  const metrics = [
+    {
+      title: "ELO Score Estimate",
+      value: Math.floor(1200 + (profileScore * 8)),
+      change: "+47 this week",
+      icon: TrendingUp,
+      color: "from-blue-500 to-cyan-500",
+      description: "Your attractiveness ranking"
+    },
+    {
+      title: "Peak Activity Time",
+      value: "8:30 PM",
+      change: "Sunday-Thursday",
+      icon: Clock,
+      color: "from-purple-500 to-pink-500",
+      description: "Best time for maximum visibility"
+    },
+    {
+      title: "Location Hotspots",
+      value: "3 Active",
+      change: "Downtown, University",
+      icon: MapPin,
+      color: "from-green-500 to-emerald-500",
+      description: "High-activity areas near you"
+    },
+    {
+      title: "Boost Effectiveness",
+      value: "312%",
+      change: "vs normal times",
+      icon: Zap,
+      color: "from-orange-500 to-red-500",
+      description: "Boost performance increase"
+    }
+  ];
+
+  const weeklyData = [
+    { day: "Mon", matches: 12, views: 89, likes: 34 },
+    { day: "Tue", matches: 8, views: 67, likes: 28 },
+    { day: "Wed", matches: 15, views: 124, likes: 45 },
+    { day: "Thu", matches: 11, views: 93, likes: 31 },
+    { day: "Fri", matches: 18, views: 156, likes: 52 },
+    { day: "Sat", matches: 22, views: 187, likes: 68 },
+    { day: "Sun", matches: 16, views: 134, likes: 41 },
   ];
 
   return (

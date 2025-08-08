@@ -12,11 +12,112 @@ import { apiRequest } from "../../lib/queryClient";
 import { UserPreferences } from "../../../../shared/schema";
 import { Bot, Brain, Target, Zap, Settings, Activity, Play, Pause } from "lucide-react";
 
+// Placeholder for ErrorBoundary component
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+
 interface IntelligentAutoSwipeProps {
   userId: string;
 }
 
 export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
+  const [isRunning, setIsRunning] = useState(false);
+  const [swipeCount, setSwipeCount] = useState(0);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: preferences, isLoading } = useQuery<UserPreferences>({
+    queryKey: ["/api/preferences", userId],
+  });
+
+  const updatePreferences = useMutation({
+    mutationFn: async (updates: Partial<UserPreferences>) => {
+      const response = await apiRequest("PATCH", `/api/preferences/${userId}`, updates);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/preferences", userId] });
+      toast({
+        title: "Settings Updated",
+        description: "Your intelligent auto-swipe preferences have been saved",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update preferences",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const strategies = [
+    {
+      id: "conservative",
+      name: "Conservative",
+      description: "High selectivity, maintains ELO score",
+      rightSwipeRate: "25-35%",
+      color: "bg-blue-500"
+    },
+    {
+      id: "balanced",
+      name: "Balanced",
+      description: "Moderate approach, good match quality",
+      rightSwipeRate: "40-50%",
+      color: "bg-green-500"
+    },
+    {
+      id: "aggressive",
+      name: "Aggressive",
+      description: "Higher volume, more matches",
+      rightSwipeRate: "55-65%",
+      color: "bg-orange-500"
+    }
+  ];
+
+  const handleStartStop = () => {
+    if (isRunning) {
+      setIsRunning(false);
+      toast({
+        title: "Auto-Swipe Stopped",
+        description: "Intelligent swiping has been paused",
+      });
+    } else {
+      setIsRunning(true);
+      setSwipeCount(0);
+      toast({
+        title: "Auto-Swipe Started",
+        description: "Intelligent swiping is now active",
+      });
+    }
+  };
+
+  if (isLoading || !preferences) {
+    return (
+      <Card className="bg-white dark:bg-gray-800">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/3"></div>
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <IntelligentAutoSwipeContent userId={userId} />
+    </ErrorBoundary>
+  );
+}
+
+function IntelligentAutoSwipeContent({ userId }: IntelligentAutoSwipeProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [swipeCount, setSwipeCount] = useState(0);
   const { toast } = useToast();
@@ -117,7 +218,7 @@ export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
             </div>
             <div className="flex items-center gap-3">
               <div className={`flex items-center gap-2 px-3 py-1 rounded-lg ${
-                isRunning ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" 
+                isRunning ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                          : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
               }`}>
                 <div className={`w-2 h-2 rounded-full ${isRunning ? "bg-green-500" : "bg-gray-400"}`}></div>
@@ -128,8 +229,8 @@ export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
               <Button
                 onClick={handleStartStop}
                 className={`${
-                  isRunning 
-                    ? "bg-red-500 hover:bg-red-600" 
+                  isRunning
+                    ? "bg-red-500 hover:bg-red-600"
                     : "bg-gradient-to-r from-tinder-primary to-tinder-secondary hover:scale-105"
                 } transition-all duration-300`}
               >
@@ -170,8 +271,8 @@ export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
                       ? "border-tinder-primary bg-tinder-primary/10"
                       : "border-gray-200 dark:border-gray-700 hover:border-tinder-primary/50"
                   }`}
-                  onClick={() => updatePreferences.mutate({ 
-                    swipeInterval: strategy.id === 'conservative' ? 5 : strategy.id === 'balanced' ? 3 : 2 
+                  onClick={() => updatePreferences.mutate({
+                    swipeInterval: strategy.id === 'conservative' ? 5 : strategy.id === 'balanced' ? 3 : 2
                   })}
                 >
                   <div className="flex items-center gap-3 mb-2">
@@ -192,7 +293,7 @@ export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
                 <Target className="h-4 w-4" />
                 Targeting Preferences
               </Label>
-              
+
               <div className="space-y-3">
                 <div>
                   <Label className="text-sm">Daily Swipe Limit: {preferences.dailyLimit}</Label>
@@ -238,7 +339,7 @@ export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
                 <Zap className="h-4 w-4" />
                 Smart Filters
               </Label>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
