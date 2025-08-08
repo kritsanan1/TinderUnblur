@@ -31,6 +31,7 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState("analytics");
   const [tinderToken, setTinderToken] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [autoSync, setAutoSync] = useState(true);
 
   // Memoize section handlers to prevent unnecessary re-renders
   const handleSectionChange = useCallback((section: string) => {
@@ -38,23 +39,49 @@ export default function Dashboard() {
   }, []);
 
   // Handle auth success with error boundary
-  const handleAuthSuccess = useCallback((token: string, refresh?: string) => {
+  const handleAuthSuccess = useCallback((tokens: { apiToken: string; refreshToken: string }) => {
+    setTinderToken(tokens.apiToken);
+    setAuthModalOpen(false);
+
+    // Automatically sync real data
+    if (autoSync) {
+      syncRealData(tokens.apiToken);
+    }
+
+    toast({
+      title: "Success",
+      description: "Connected to Tinder successfully",
+    });
+  }, [toast, autoSync]);
+
+  const syncRealData = async (token: string) => {
     try {
-      setTinderToken(token);
-      setAuthModalOpen(false);
+      // Sync real recommendations
+      await fetch(`/api/tinder/recommendations/${userId}?tinderToken=${token}`);
+
+      // Sync real analytics
+      await fetch(`/api/tinder/sync-analytics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, tinderToken: token })
+      });
+
+      // Sync real teasers
+      await fetch(`/api/teasers/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, tinderToken: token })
+      });
+
       toast({
-        title: "Success",
-        description: "Connected to Tinder successfully",
+        title: "Real Data Synced",
+        description: "All features now using live Tinder data!",
       });
     } catch (error) {
-      console.error('Auth success handler error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save authentication",
-        variant: "destructive",
-      });
+      console.error('Sync failed:', error);
     }
-  }, [toast]);
+  };
+
 
   const views = useMemo(() => [
     { 

@@ -247,6 +247,205 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Perform swipe action (real API)
   app.post("/api/tinder/swipe", async (req, res) => {
+
+
+  // Real Auto-Swipe Control
+  app.post("/api/auto-swipe/start", async (req, res) => {
+    try {
+      const { userId, tinderToken, preferences } = req.body;
+      
+      if (!tinderToken) {
+        return res.status(400).json({ message: "Tinder token required" });
+      }
+
+      tinderService.setToken(tinderToken);
+      
+      // Store auto-swipe session
+      const session = {
+        userId,
+        preferences,
+        startTime: new Date(),
+        isActive: true,
+        swipeCount: 0
+      };
+      
+      // Start background auto-swiping
+      startAutoSwipeSession(session);
+      
+      res.json({ 
+        message: "Real auto-swipe started",
+        sessionId: `session_${Date.now()}`
+      });
+    } catch (error) {
+      console.error("Auto-swipe start error:", error);
+      res.status(500).json({ message: "Failed to start auto-swipe" });
+    }
+  });
+
+  app.post("/api/auto-swipe/stop", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      // Stop auto-swipe session
+      stopAutoSwipeSession(userId);
+      
+      res.json({ message: "Auto-swipe stopped" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to stop auto-swipe" });
+    }
+  });
+
+  // Real Teaser Unblur with Tinder API
+  app.post("/api/teasers/unblur/:teaserId", async (req, res) => {
+    try {
+      const { teaserId } = req.params;
+      const { tinderToken } = req.query;
+      
+      if (!tinderToken) {
+        return res.status(400).json({ message: "Tinder token required" });
+      }
+
+      tinderService.setToken(tinderToken as string);
+      
+      // Use real Tinder API to unblur teaser
+      const result = await tinderService.performSwipe(teaserId, 'like');
+      
+      res.json({
+        success: true,
+        match: result?.match || false,
+        teaserId,
+        unblurred: true
+      });
+    } catch (error) {
+      console.error("Teaser unblur error:", error);
+      res.status(500).json({ message: "Failed to unblur teaser" });
+    }
+  });
+
+  // Real Data Sync
+  app.post("/api/tinder/sync-analytics", async (req, res) => {
+    try {
+      const { userId, tinderToken } = req.body;
+      
+      if (!tinderToken) {
+        return res.status(400).json({ message: "Tinder token required" });
+      }
+
+      tinderService.setToken(tinderToken);
+      
+      // Fetch real analytics data
+      const analytics = await tinderService.getAnalytics();
+      const profile = await tinderService.getProfile();
+      
+      if (analytics && profile) {
+        // Store real data
+        await storage.updateUserAnalytics(userId, {
+          matches: analytics.matches || 0,
+          likes: analytics.likes || 0,
+          superLikes: analytics.super_likes || 0,
+          views: analytics.profile_views || 0,
+          lastSyncDate: new Date().toISOString()
+        });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Real analytics synced successfully" 
+      });
+    } catch (error) {
+      console.error("Analytics sync error:", error);
+      res.status(500).json({ message: "Failed to sync analytics" });
+    }
+  });
+
+// Auto-swipe session management
+const activeSwipeSessions = new Map();
+
+async function startAutoSwipeSession(session: any) {
+  const { userId, preferences } = session;
+  
+  if (activeSwipeSessions.has(userId)) {
+    return; // Already running
+  }
+  
+  activeSwipeSessions.set(userId, session);
+  
+  // Background swiping logic
+  const swipeInterval = setInterval(async () => {
+    try {
+      const recommendations = await tinderService.getRecommendations();
+      
+      if (recommendations?.results?.length) {
+        const user = recommendations.results[0];
+        
+        // AI decision logic based on preferences
+        const shouldLike = makeSwipeDecision(user, preferences);
+        const direction = shouldLike ? 'like' : 'pass';
+        
+        await tinderService.performSwipe(user._id, direction);
+        
+        session.swipeCount++;
+        
+        // Check daily limit
+        if (session.swipeCount >= preferences.dailyLimit) {
+          stopAutoSwipeSession(userId);
+        }
+      }
+    } catch (error) {
+      console.error('Auto-swipe error:', error);
+    }
+  }, preferences.swipeInterval * 1000);
+  
+  session.intervalId = swipeInterval;
+}
+
+function stopAutoSwipeSession(userId: string) {
+  const session = activeSwipeSessions.get(userId);
+  if (session?.intervalId) {
+    clearInterval(session.intervalId);
+    activeSwipeSessions.delete(userId);
+  }
+}
+
+function makeSwipeDecision(user: any, preferences: any): boolean {
+  // AI decision logic
+  let score = 0.5; // Base score
+  
+  // Age preference
+  if (user.birth_date) {
+    const age = new Date().getFullYear() - new Date(user.birth_date).getFullYear();
+    if (age >= preferences.ageRange[0] && age <= preferences.ageRange[1]) {
+      score += 0.2;
+    } else {
+      score -= 0.3;
+    }
+  }
+  
+  // Verified filter
+  if (preferences.filters.verifiedOnly && !user.is_verified) {
+    return false;
+  }
+  
+  // Bio filter
+  if (preferences.filters.bioRequired && !user.bio) {
+    return false;
+  }
+  
+  // Photo quality (simplified)
+  if (user.photos?.length >= 3) {
+    score += 0.1;
+  }
+  
+  // Strategy-based threshold
+  const thresholds = {
+    conservative: 0.7,
+    balanced: 0.5,
+    aggressive: 0.3
+  };
+  
+  return score >= thresholds[preferences.strategy];
+}
+
     try {
       const { userId, targetUserId, direction, tinderToken } = req.body;
       

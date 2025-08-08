@@ -86,10 +86,44 @@ export function IntelligentAutoSwipe({ userId }: IntelligentAutoSwipeProps) {
     } else {
       setIsRunning(true);
       setSwipeCount(0);
+
+      // Start real auto-swiping if connected
+      if (isConnected && tinderToken) {
+        startRealAutoSwipe();
+      }
+
       toast({
         title: "Auto-Swipe Started",
-        description: "Intelligent swiping is now active",
+        description: isConnected
+          ? "Real intelligent swiping is now active on your Tinder account!"
+          : "Intelligent swiping is now active",
       });
+    }
+  };
+
+  const startRealAutoSwipe = async () => {
+    try {
+      await fetch('/api/auto-swipe/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          tinderToken,
+          preferences: {
+            strategy: preferences.swipeInterval === 5 ? 'conservative' :
+                     preferences.swipeInterval === 3 ? 'balanced' : 'aggressive',
+            dailyLimit: preferences.dailyLimit,
+            ageRange: [preferences.ageMin, preferences.ageMax],
+            filters: {
+              verifiedOnly: preferences.verifiedOnly,
+              photoQuality: preferences.photoQuality,
+              bioRequired: preferences.bioRequired
+            }
+          }
+        })
+      });
+    } catch (error) {
+      console.error('Failed to start real auto-swipe:', error);
     }
   };
 
@@ -182,10 +216,44 @@ function IntelligentAutoSwipeContent({ userId }: IntelligentAutoSwipeProps) {
     } else {
       setIsRunning(true);
       setSwipeCount(0);
+
+      // Start real auto-swiping if connected
+      if (isConnected && tinderToken) {
+        startRealAutoSwipe();
+      }
+
       toast({
         title: "Auto-Swipe Started",
-        description: "Intelligent swiping is now active",
+        description: isConnected
+          ? "Real intelligent swiping is now active on your Tinder account!"
+          : "Intelligent swiping is now active",
       });
+    }
+  };
+
+  const startRealAutoSwipe = async () => {
+    try {
+      await fetch('/api/auto-swipe/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          tinderToken,
+          preferences: {
+            strategy: preferences.swipeInterval === 5 ? 'conservative' :
+                     preferences.swipeInterval === 3 ? 'balanced' : 'aggressive',
+            dailyLimit: preferences.dailyLimit,
+            ageRange: [preferences.ageMin, preferences.ageMax],
+            filters: {
+              verifiedOnly: preferences.verifiedOnly,
+              photoQuality: preferences.photoQuality,
+              bioRequired: preferences.bioRequired
+            }
+          }
+        })
+      });
+    } catch (error) {
+      console.error('Failed to start real auto-swipe:', error);
     }
   };
 
