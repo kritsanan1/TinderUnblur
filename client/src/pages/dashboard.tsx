@@ -30,7 +30,6 @@ export default function Dashboard() {
   const [userId] = useState("demo-user-id");
   const [currentView, setCurrentView] = useState("analytics");
   const [tinderToken, setTinderToken] = useState<string | null>(null);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [autoSync, setAutoSync] = useState(true);
 
   // Memoize section handlers to prevent unnecessary re-renders
@@ -39,13 +38,12 @@ export default function Dashboard() {
   }, []);
 
   // Handle auth success with error boundary
-  const handleAuthSuccess = useCallback((tokens: { apiToken: string; refreshToken: string }) => {
-    setTinderToken(tokens.apiToken);
-    setAuthModalOpen(false);
+  const handleAuthSuccess = useCallback((apiToken: string, refreshToken?: string) => {
+    setTinderToken(apiToken);
 
     // Automatically sync real data
     if (autoSync) {
-      syncRealData(tokens.apiToken);
+      syncRealData(apiToken);
     }
 
     toast({
@@ -162,9 +160,7 @@ export default function Dashboard() {
             </div>
             <div className="mt-6 flex justify-center">
               <TinderAuthModal 
-                isOpen={authModalOpen}
-                onClose={() => setAuthModalOpen(false)}
-                onSuccess={handleAuthSuccess}
+                onTokenReceived={handleAuthSuccess}
                 trigger={
                   <Button 
                     variant={tinderToken ? "outline" : "default"}

@@ -58,6 +58,11 @@ export function TeaserUnblur({ userId }: TeaserUnblurProps) {
     },
   });
 
+  // Guard clause for teasers being undefined or null
+  if (!teasers) {
+    return null; // Or render a loading/error state
+  }
+
   const unblurredCount = teasers.filter(t => t.isUnblurred).length;
   const totalCount = teasers.length;
 

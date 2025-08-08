@@ -64,6 +64,65 @@ export class TinderService {
     }
   }
 
+  async performSwipe(userId: string, direction: 'like' | 'pass') {
+    if (!this.api) {
+      return null;
+    }
+
+    try {
+      return await this.api.performSwipe(userId, direction);
+    } catch (error) {
+      console.error('Failed to perform swipe:', error);
+      return null;
+    }
+  }
+
+  async performSuperLike(userId: string) {
+    if (!this.api) {
+      return null;
+    }
+
+    try {
+      return await this.api.performSuperLike(userId);
+    } catch (error) {
+      console.error('Failed to perform super like:', error);
+      return null;
+    }
+  }
+
+  async updateLocation(lat: number, lon: number) {
+    if (!this.api) {
+      return null;
+    }
+
+    try {
+      return await this.api.updateLocation(lat, lon);
+    } catch (error) {
+      console.error('Failed to update location:', error);
+      return null;
+    }
+  }
+
+  async getAnalytics() {
+    if (!this.api) {
+      return null;
+    }
+
+    try {
+      return await this.api.getAnalytics();
+    } catch (error) {
+      console.error('Failed to fetch analytics:', error);
+      return null;
+    }
+
+    try {
+      return await this.api.getProfile();
+    } catch (error) {
+      console.error('Failed to fetch Tinder profile:', error);
+      return null;
+    }
+  }
+
   async getAnalytics() {
     if (!this.api) {
       return null;
