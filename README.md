@@ -1,41 +1,371 @@
 
-# Tinder API documentation
+# Tinder Optimizer
 
-## Notes
+A comprehensive web application designed to enhance Tinder profiles through automated optimization features, real-time analytics, auto-swiping capabilities, and profile improvement suggestions to maximize match rates and user engagement.
 
-### Disclaimer
+## 🚀 Features
 
-I do not work for Tinder or any of the companies listed in this document. This documentation is highly inspired in documentations already found at
-[https://github.com/Tommy-42](https://github.com/Tommy-42), [https://gist.github.com/rtt/10403467](https://gist.github.com/rtt/10403467), [https://github.com/charliewolf/pynder/issues/141](https://github.com/charliewolf/pynder/issues/141), [https://github.com/Adewra/Tinder/blob/master/docs/Tinder%20API.apib](https://github.com/Adewra/Tinder/blob/master/docs/Tinder%20API.apib), [https://github.com/fbessez/Tinder/blob/master/README.md](https://github.com/fbessez/Tinder/blob/master/README.md).
+### Core Functionality
+- **🤖 Smart Auto-Swipe**: Intelligent automated swiping with AI-driven filtering based on age, verification status, photo quality, and bio requirements
+- **📊 Advanced Analytics**: Real-time statistics tracking for matches, profile views, swipe metrics, and match rate optimization
+- **🔍 Teaser Unblur**: Direct integration with Tinder API to reveal blurred teaser images
+- **⚡ Profile Optimization**: AI-driven suggestions for profile improvement based on performance metrics and industry best practices
+- **📱 Activity Feed**: Comprehensive logging and tracking of all user actions and system activities
+- **🌙 Dark/Light Mode**: Complete theme support with user preference persistence
 
-Even though these documents are very good, I wanted to create one that was not only up to date and complete (all the endpoints that I could gather) but also documented following the OpenAPI standard.
+### Technical Features
+- **🔐 Real API Integration**: Direct Tinder API integration with proper authentication and error handling
+- **🧪 Comprehensive Testing**: Full unit test coverage using Vitest with mocking and integration tests
+- **📈 Performance Monitoring**: Real-time performance tracking and optimization suggestions
+- **🔄 Hot Reload**: Full-stack hot module replacement for rapid development
 
-### General
+## 🛠 Tech Stack
 
-In the following sections you'll find a detailed description of the three main calls to the Tinder API (Like, Pass, Recomendations). The remaining API calls you can find in the tinder-api-swagger.yaml file.
+### Frontend
+- **React 18** with TypeScript for type-safe development
+- **Vite** as build tool with optimized development experience
+- **Tailwind CSS** + **shadcn/ui** for consistent, accessible design system
+- **TanStack Query** for efficient server state management and caching
+- **Wouter** for lightweight client-side routing
+- **Framer Motion** for smooth animations and transitions
 
-### How to use
+### Backend
+- **Express.js** with TypeScript for robust API development
+- **Drizzle ORM** with PostgreSQL for type-safe database operations
+- **Real Tinder API Integration** following official swagger specifications
+- **Memory Storage** with database-ready schema for easy migration
 
-To see the tinder-api-swagger.yaml documentation in action visit its GitHub Page at [https://nastydevs.github.io/tinder-api-documentation/](https://nastydevs.github.io/tinder-api-documentation/).
+### Development & Testing
+- **Vitest** for fast unit and integration testing
+- **TypeScript** with strict configuration for enhanced code quality
+- **ESLint + Prettier** for consistent code formatting
+- **Hot Module Replacement** for seamless development experience
 
-### Miscelaneous
+## 📋 Technical Requirements
 
-* Tinder charges more from people older than 30 years old.
-* Tinder uses no only the Google's captcha but also ones given by the company called [Arkose Labs](https://www.arkoselabs.com/).
-* In the not paid Tinder version you can like up to 100 people a day.
-* Tinder does not verify if your phone number is registered with them when you ask for an OTP code, they simply send the code.
-* Your account is linked with the phone number, not with the e-mail, not with your facebook account.
-* You cannot change your name, age and gender after registration.
-* The obvious one: rich and beauty people gain a lot of more likes. In a test, I registered as 43 years old doctor that worked in an very respected hospital where I live, no photo and a very minimal description. Around 30 womem matched with my profile and sent me messages starting the conversation. And don't even get me started with relates to girls, as a resume: one photo (beauty girl from internet), no description, resulting in hundreds of guys liking the profile, including lots of super likes.
-* You can change your location whitout paying for it, just use the ping api endpoint. I didn't bother to test how much you have to abuse it to get you trouble.
-* The maximum search radius is 100 miles (retarded units) or ~160 kilometers.
-* If they run low of people for you to like/dislike, they you leave you with a soft block with a timeout of 30 minutes.
-* Every button you click generates a event that is sent to Google analytics.
-* Needs to check but it seems that Tinder extract all uploaded image's metadata.
-* The marjority of the requests needs only the X-Auth-Token token to be sent.
-* They store all important information in the local storage.
-* If your sesssion exprires just use the refresh_token (local storage) to generate another one. The generation of a new token will lead to the generation of a new refresh_token, both are going to be returned in the response of the api call. The token has a life span of 24 hours.
-* If you register and deletes your account a number of times then you'll get a perma block (there is a tinder code for it, don't remember now).
+### System Prerequisites
+- **Node.js**: Version 18.0 or higher
+- **npm**: Version 8.0 or higher (included with Node.js)
+- **Git**: Latest stable version
+- **Modern Browser**: Chrome 90+, Firefox 88+, Safari 14+, or Edge 90+
+
+### Development Environment
+- **Operating System**: Windows 10+, macOS 10.15+, or Linux (Ubuntu 18.04+)
+- **Memory**: Minimum 4GB RAM (8GB recommended)
+- **Storage**: 500MB free space for dependencies
+
+### Environment Variables
+Create a `.env` file in the root directory with the following variables:
+
+```bash
+# Server Configuration
+NODE_ENV=development
+PORT=5000
+VITE_API_URL=http://localhost:5000
+
+# Database Configuration (Optional - uses memory storage by default)
+DATABASE_URL=postgresql://username:password@localhost:5432/tinder_optimizer
+PGPORT=5432
+PGUSER=your_username
+PGPASSWORD=your_password
+PGDATABASE=tinder_optimizer
+PGHOST=localhost
+
+# Tinder API Configuration (Required for real API features)
+TINDER_API_BASE_URL=https://api.gotinder.com
+TINDER_APP_VERSION=1020343
+TINDER_PLATFORM=web
+
+# Session Configuration
+SESSION_SECRET=your-super-secret-session-key-here
+
+# External Services (Optional)
+ANALYTICS_API_KEY=your-analytics-key
+```
+
+## 🚀 Installation Guide
+
+### Quick Start (Recommended)
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/tinder-optimizer.git
+cd tinder-optimizer
+
+# 2. Install dependencies
+npm install
+
+# 3. Create environment file
+cp .env.example .env
+# Edit .env with your configuration
+
+# 4. Start development server
+npm run dev
+
+# 5. Open your browser
+# Navigate to http://localhost:5000
+```
+
+### Production Setup
+```bash
+# 1. Install dependencies
+npm ci --production
+
+# 2. Build the application
+npm run build
+
+# 3. Start production server
+npm start
+```
+
+### Docker Setup (Alternative)
+```bash
+# Build and run with Docker
+docker build -t tinder-optimizer .
+docker run -p 5000:5000 --env-file .env tinder-optimizer
+```
+
+## 🏗 Development Guidelines
+
+### Code Style Conventions
+- **TypeScript**: Strict mode enabled with comprehensive type checking
+- **ESLint**: Extended from `@typescript-eslint/recommended`
+- **Prettier**: Automatic code formatting with 2-space indentation
+- **Import Organization**: Group imports by external, internal, and relative paths
+- **Naming Conventions**:
+  - Components: PascalCase (`UserProfile.tsx`)
+  - Functions: camelCase (`getUserData`)
+  - Constants: SCREAMING_SNAKE_CASE (`API_BASE_URL`)
+  - Files: kebab-case for utilities, PascalCase for components
+
+### Git Workflow
+```bash
+# Branch naming format
+[type]/[ticket-number]-[description]
+
+# Examples
+feature/TR-123-add-auto-swipe
+bugfix/TR-456-fix-analytics-display
+hotfix/TR-789-urgent-api-fix
+docs/TR-101-update-readme
+```
+
+### Commit Message Format
+```
+type(scope): description
+
+Types: feat, fix, docs, style, refactor, test, chore
+Scope: api, ui, auth, analytics, tests
+
+Examples:
+feat(api): add Tinder API integration for real data
+fix(ui): resolve mobile responsiveness issues
+docs(readme): update installation instructions
+```
+
+### Pull Request Template
+```markdown
+## 📝 Changes Made
+- [ ] Feature implementation
+- [ ] Bug fixes
+- [ ] Documentation updates
+- [ ] Test coverage
+
+## 🧪 Testing Steps
+1. Step one
+2. Step two
+3. Expected result
+
+## 📱 Screenshots
+<!-- Add screenshots for UI changes -->
+
+## ✅ Review Checklist
+- [ ] Code follows style guidelines
+- [ ] Tests pass locally
+- [ ] Documentation updated
+- [ ] No console errors
+- [ ] Mobile responsive (if applicable)
+```
+
+## 🌐 API Endpoints
+
+### Tinder Integration
+```bash
+GET    /api/tinder/recommendations/:userId    # Fetch real recommendations
+POST   /api/tinder/swipe                      # Perform actual swipes
+POST   /api/tinder/superlike                  # Execute super likes
+POST   /api/tinder/sync-analytics/:userId     # Sync real analytics data
+GET    /api/tinder/profile/:userId            # Get Tinder profile
+POST   /api/tinder/location                   # Update location
+```
+
+### User Management
+```bash
+GET    /api/preferences/:userId               # Get user preferences
+PATCH  /api/preferences/:userId               # Update preferences
+PATCH  /api/users/:userId/tinder-token        # Update Tinder token
+```
+
+### Analytics & Data
+```bash
+GET    /api/analytics/:userId                 # Get user analytics
+POST   /api/analytics                         # Create analytics entry
+GET    /api/activities/:userId                # Get user activities
+POST   /api/activities                        # Log new activity
+```
+
+### Teaser Management
+```bash
+GET    /api/teasers/:userId                   # Get user teasers
+POST   /api/teasers/unblur                    # Unblur teasers with real API
+PATCH  /api/teasers/:id/unblur                # Mark teaser as unblurred
+```
+
+## 🚀 Deployment Process
+
+### Replit Deployment (Recommended)
+1. **Connect Repository**: Link your GitHub repository to Replit
+2. **Environment Setup**: Configure environment variables in Replit Secrets
+3. **Deploy**: Use the integrated deployment system
+4. **Domain**: Access via `https://your-repl-name.replit.app`
+
+### Vercel Deployment
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Set environment variables
+vercel env add NODE_ENV production
+vercel env add TINDER_API_BASE_URL https://api.gotinder.com
+```
+
+### Railway Deployment
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login and deploy
+railway login
+railway init
+railway up
+```
+
+### Environment-Specific Configuration
+
+#### Development
+- Hot reload enabled
+- Debug logging active
+- Mock data for testing
+- Development database
+
+#### Staging
+- Production build
+- Limited logging
+- Test data subset
+- Staging database
+
+#### Production
+- Optimized build
+- Error logging only
+- Real user data
+- Production database with backups
+
+## 🔧 Scripts Documentation
+
+| Script | Description | Parameters | Example | Troubleshooting |
+|--------|-------------|------------|---------|-----------------|
+| `npm run dev` | Start development server with hot reload | None | `npm run dev` | Check port 5000 availability |
+| `npm run build` | Build production bundle | None | `npm run build` | Clear dist/ folder if errors |
+| `npm run start` | Start production server | None | `npm run start` | Ensure build completed first |
+| `npm run test` | Run all tests with watch mode | None | `npm run test` | Check test setup.ts file |
+| `npm run test:run` | Run tests once without watch | None | `npm run test:run` | For CI/CD environments |
+| `npm run test:ui` | Open Vitest UI interface | None | `npm run test:ui` | Browser opens automatically |
+| `npm run lint` | Run ESLint code analysis | `--fix` (optional) | `npm run lint --fix` | Check .eslintrc configuration |
+| `npm run type-check` | Run TypeScript type checking | None | `npm run type-check` | Review tsconfig.json settings |
+| `npm run preview` | Preview production build locally | None | `npm run preview` | Run build command first |
+
+## 🔒 Security Considerations
+
+### API Security
+- **Token Management**: Secure storage and transmission of Tinder authentication tokens
+- **Rate Limiting**: Implemented to prevent API abuse and account suspension
+- **Input Validation**: All user inputs validated and sanitized
+- **CORS Configuration**: Properly configured for production environments
+
+### Data Protection
+- **Environment Variables**: Sensitive data stored in environment variables
+- **Session Security**: Secure session management with proper expiration
+- **HTTPS**: All production traffic encrypted with TLS
+- **No Sensitive Logging**: API tokens and user data excluded from logs
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### Port Already in Use
+```bash
+# Kill process on port 5000
+npx kill-port 5000
+
+# Or use different port
+PORT=3000 npm run dev
+```
+
+#### Module Not Found Errors
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### TypeScript Compilation Errors
+```bash
+# Check TypeScript configuration
+npx tsc --noEmit
+
+# Clear TypeScript cache
+rm -rf node_modules/.cache
+```
+
+#### API Integration Issues
+1. Verify Tinder token validity
+2. Check API rate limits
+3. Confirm environment variables
+4. Review network connectivity
+
+### Performance Optimization
+- **Bundle Analysis**: Use `npm run build -- --analyze` to examine bundle size
+- **Memory Usage**: Monitor with browser DevTools
+- **API Caching**: Implemented via TanStack Query
+- **Image Optimization**: Automatic optimization for photos and assets
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+
+### Development Process
+1. Fork the repository
+2. Create a feature branch following naming conventions
+3. Make your changes with proper tests
+4. Submit a pull request with detailed description
+5. Participate in code review process
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check this README and additional docs in `/docs`
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Join community discussions
+- **Email**: contact@tinderoptimizer.app (for urgent issues)
+
+## 🔄 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history and updates.
 
 ## Other references
 
