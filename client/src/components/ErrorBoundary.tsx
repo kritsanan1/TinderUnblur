@@ -42,10 +42,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleUnhandledRejection = (event: PromiseRejectionEvent) => {
     console.error('Unhandled promise rejection:', event.reason);
-    this.setState({ 
-      hasError: true, 
-      error: new Error(`Unhandled promise rejection: ${event.reason}`) 
-    });
+    
+    // Only show error boundary for critical errors, not all rejections
+    if (event.reason instanceof Error && event.reason.message.includes('Network')) {
+      this.setState({ 
+        hasError: true, 
+        error: new Error(`Network error: ${event.reason.message}`) 
+      });
+    } else {
+      // Log but don't crash the app for other rejections
+      console.warn('Promise rejected but not showing error boundary:', event.reason);
+    }
+    
     event.preventDefault();
   };
 

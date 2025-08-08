@@ -45,7 +45,7 @@ describe('AutoSwipeSettings', () => {
     mockApiRequest.mockImplementation(() => new Promise(() => {})) // Never resolves
     
     renderWithProviders()
-    expect(screen.getByTestId('loading-skeleton') || document.querySelector('.animate-pulse')).toBeInTheDocument()
+    expect(document.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('renders preferences when loaded', async () => {

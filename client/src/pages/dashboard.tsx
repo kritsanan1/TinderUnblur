@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { TeaserUnblur } from "../components/dashboard/teaser-unblur";
 import { ProfileOptimization } from "../components/dashboard/profile-optimization";
@@ -34,7 +34,6 @@ export default function Dashboard() {
 
   // Memoize section handlers to prevent unnecessary re-renders
   const handleSectionChange = useCallback((section: string) => {
-    console.log(section); // Temporary logging for debugging
     setCurrentView(section);
   }, []);
 
@@ -57,7 +56,7 @@ export default function Dashboard() {
     }
   }, [toast]);
 
-  const views = [
+  const views = useMemo(() => [
     { 
       id: "analytics", 
       name: "Analytics", 
@@ -93,7 +92,7 @@ export default function Dashboard() {
       description: "Recent actions log",
       component: <ActivityFeed userId={userId} /> 
     },
-  ];
+  ], [userId]);
 
   const currentViewData = views.find(view => view.id === currentView);
 
@@ -201,7 +200,9 @@ export default function Dashboard() {
 
           {/* Main Content */}
           <div className="relative">
-            {currentViewData?.component}
+            <ErrorBoundary>
+              {currentViewData?.component}
+            </ErrorBoundary>
           </div>
 
           {/* Enhanced Footer */}
