@@ -298,7 +298,7 @@ export class TinderAuthService {
     } else {
       // Step 2: Validate OTP and get refresh token
       const validateResult = await this.validateOTPCode(phoneNumber, otpCode)
-      
+
       if (!validateResult.success || !validateResult.data?.refresh_token) {
         return validateResult
       }

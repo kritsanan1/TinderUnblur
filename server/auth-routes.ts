@@ -46,9 +46,9 @@ const TokenValidationSchema = z.object({
 router.post('/auth/phone/send-otp', async (req, res) => {
   try {
     const { phoneNumber } = SendOTPSchema.parse(req.body)
-    
+
     const result = await TinderAuthService.sendOTPCode(phoneNumber)
-    
+
     if (result.success) {
       res.json(result)
     } else {
@@ -91,10 +91,10 @@ router.post('/auth/phone/send-otp', async (req, res) => {
 router.post('/auth/phone/validate-otp', async (req, res) => {
   try {
     const { phoneNumber, otpCode } = ValidateOTPSchema.parse(req.body)
-    
+
     // First validate OTP and get refresh token
     const validateResult = await TinderAuthService.validateOTPCode(phoneNumber, otpCode)
-    
+
     if (!validateResult.success || !validateResult.data?.refresh_token) {
       return res.status(400).json(validateResult)
     }
@@ -103,7 +103,7 @@ router.post('/auth/phone/validate-otp', async (req, res) => {
     const tokenResult = await TinderAuthService.getTinderTokenFromRefreshToken(
       validateResult.data.refresh_token
     )
-    
+
     if (tokenResult.success) {
       res.json(tokenResult)
     } else {
@@ -145,9 +145,9 @@ router.post('/auth/phone/validate-otp', async (req, res) => {
 router.post('/auth/facebook', async (req, res) => {
   try {
     const { facebookToken } = FacebookAuthSchema.parse(req.body)
-    
+
     const result = await TinderAuthService.authenticateWithFacebook(facebookToken)
-    
+
     if (result.success) {
       res.json(result)
     } else {
@@ -189,9 +189,9 @@ router.post('/auth/facebook', async (req, res) => {
 router.post('/auth/refresh-token', async (req, res) => {
   try {
     const { refreshToken } = RefreshTokenSchema.parse(req.body)
-    
+
     const result = await TinderAuthService.refreshApiToken(refreshToken)
-    
+
     if (result.success) {
       res.json(result)
     } else {
@@ -232,13 +232,13 @@ router.post('/auth/refresh-token', async (req, res) => {
 router.post('/auth/validate-token', async (req, res) => {
   try {
     const { apiToken } = TokenValidationSchema.parse(req.body)
-    
+
     const isValid = await TinderAuthService.validateToken(apiToken)
-    
+
     if (isValid) {
       // Get user profile for additional validation
       const profileResult = await TinderAuthService.getUserProfile(apiToken)
-      
+
       res.json({
         success: true,
         valid: true,
@@ -284,16 +284,16 @@ router.post('/auth/validate-token', async (req, res) => {
 router.get('/auth/profile', async (req, res) => {
   try {
     const apiToken = req.headers['x-auth-token'] as string
-    
+
     if (!apiToken) {
       return res.status(401).json({
         success: false,
         error: 'X-Auth-Token header is required'
       })
     }
-    
+
     const result = await TinderAuthService.getUserProfile(apiToken)
-    
+
     if (result.success) {
       res.json(result)
     } else {

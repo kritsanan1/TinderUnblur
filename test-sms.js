@@ -2,6 +2,7 @@
 // Test script to send SMS using your Tinder auth API
 const sendSMS = async () => {
   try {
+    console.log('Sending SMS request...');
     const response = await fetch('http://localhost:5000/api/auth/phone/send-otp', {
       method: 'POST',
       headers: {
@@ -12,8 +13,22 @@ const sendSMS = async () => {
       })
     });
 
-    const result = await response.json();
-    console.log('SMS Response:', result);
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+
+    const responseText = await response.text();
+    console.log('Raw response:', responseText);
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON:', parseError);
+      console.error('Response was:', responseText);
+      return;
+    }
+
+    console.log('Parsed SMS Response:', result);
     
     if (result.success && result.data?.sms_sent) {
       console.log('✅ SMS sent successfully!');
