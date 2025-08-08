@@ -44,10 +44,14 @@ const TokenValidationSchema = z.object({
  * @apiError {String} error Error message
  */
 router.post('/auth/phone/send-otp', async (req, res) => {
+  console.log('📨 Received SMS OTP request:', req.body)
+  
   try {
     const { phoneNumber } = SendOTPSchema.parse(req.body)
+    console.log('✅ Phone number validated:', phoneNumber)
 
     const result = await TinderAuthService.sendOTPCode(phoneNumber)
+    console.log('📤 SMS service result:', result)
 
     if (result.success) {
       res.json(result)
@@ -55,6 +59,8 @@ router.post('/auth/phone/send-otp', async (req, res) => {
       res.status(400).json(result)
     }
   } catch (error) {
+    console.error('❌ SMS OTP route error:', error)
+    
     if (error instanceof z.ZodError) {
       res.status(400).json({
         success: false,

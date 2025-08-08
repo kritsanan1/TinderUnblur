@@ -33,7 +33,12 @@ export class TinderAuthService {
   private static readonly REQUEST_HEADERS = {
     'User-Agent': 'Tinder/11.4.0 (iPhone; iOS 12.4.1; Scale/2.00)',
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Accept': 'application/json',
+    'app-session-id': 'generated-session-id',
+    'app-session-time-elapsed': '0',
+    'app-version': '11.4.0',
+    'tinder-version': '11.4.0',
+    'platform': 'ios'
   }
 
   // Phone Authentication URLs
@@ -53,9 +58,16 @@ export class TinderAuthService {
       // Validate phone number format
       PhoneNumberSchema.parse(phoneNumber)
 
+      // Remove the + prefix as per Tinder API documentation
+      const cleanPhoneNumber = phoneNumber.startsWith('+') ? phoneNumber.substring(1) : phoneNumber
+
       const payload = {
-        phone_number: phoneNumber
+        phone_number: cleanPhoneNumber
       }
+
+      console.log('Sending OTP request to:', this.CODE_REQUEST_URL)
+      console.log('Payload:', payload)
+      console.log('Headers:', this.REQUEST_HEADERS)
 
       const response = await fetch(this.CODE_REQUEST_URL, {
         method: 'POST',
@@ -63,7 +75,29 @@ export class TinderAuthService {
         body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
+      console.log('Response status:', response.status)
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
+
+      // Get response text first to debug empty responses
+      const responseText = await response.text()
+      console.log('Response text:', responseText)
+
+      if (!responseText) {
+        return {
+          success: false,
+          error: `Empty response from Tinder API (Status: ${response.status})`
+        }
+      }
+
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (parseError) {
+        return {
+          success: false,
+          error: `Invalid JSON response: ${responseText.substring(0, 200)}...`
+        }
+      }
 
       if (!response.ok) {
         return {
@@ -102,10 +136,15 @@ export class TinderAuthService {
       PhoneNumberSchema.parse(phoneNumber)
       OTPCodeSchema.parse(otpCode)
 
+      // Remove the + prefix as per Tinder API documentation
+      const cleanPhoneNumber = phoneNumber.startsWith('+') ? phoneNumber.substring(1) : phoneNumber
+
       const payload = {
-        phone_number: phoneNumber,
+        phone_number: cleanPhoneNumber,
         otp_code: otpCode
       }
+
+      console.log('Validating OTP:', payload)
 
       const response = await fetch(this.CODE_VALIDATE_URL, {
         method: 'POST',
@@ -113,7 +152,25 @@ export class TinderAuthService {
         body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
+      const responseText = await response.text()
+      console.log('Validate OTP response:', responseText)
+
+      if (!responseText) {
+        return {
+          success: false,
+          error: `Empty response from Tinder API (Status: ${response.status})`
+        }
+      }
+
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (parseError) {
+        return {
+          success: false,
+          error: `Invalid JSON response: ${responseText.substring(0, 200)}...`
+        }
+      }
 
       if (!response.ok) {
         return {
@@ -155,13 +212,33 @@ export class TinderAuthService {
         refresh_token: refreshToken
       }
 
+      console.log('Getting API token from refresh token')
+
       const response = await fetch(this.PHONE_TOKEN_URL, {
         method: 'POST',
         headers: this.REQUEST_HEADERS,
         body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
+      const responseText = await response.text()
+      console.log('Token generation response:', responseText)
+
+      if (!responseText) {
+        return {
+          success: false,
+          error: `Empty response from Tinder API (Status: ${response.status})`
+        }
+      }
+
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (parseError) {
+        return {
+          success: false,
+          error: `Invalid JSON response: ${responseText.substring(0, 200)}...`
+        }
+      }
 
       if (!response.ok) {
         return {
