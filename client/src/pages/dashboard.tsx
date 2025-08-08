@@ -8,6 +8,7 @@ import { AdvancedAnalytics } from "../components/dashboard/advanced-analytics";
 import { IntelligentAutoSwipe } from "../components/dashboard/intelligent-auto-swipe";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { TinderAuthModal } from "../components/auth/TinderAuthModal";
 import { 
   BarChart3, 
   Eye, 
@@ -18,12 +19,23 @@ import {
   Settings,
   Zap,
   Heart,
-  TrendingUp
+  TrendingUp,
+  Key
 } from "lucide-react";
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState("analytics");
+  const [tinderToken, setTinderToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const userId = "demo-user-id";
+
+  const handleTokenReceived = (token: string, refresh?: string) => {
+    setTinderToken(token);
+    if (refresh) {
+      setRefreshToken(refresh);
+    }
+    console.log('Tinder authentication successful', { hasToken: !!token, hasRefresh: !!refresh });
+  };
 
   const views = [
     { 
@@ -94,6 +106,26 @@ export default function Dashboard() {
               <Bot className="h-4 w-4 text-blue-500" />
               <span className="text-gray-600 dark:text-gray-400">Auto-Swipe Ready</span>
             </div>
+            <div className="flex items-center gap-2">
+              <Key className="h-4 w-4 text-tinder-primary" />
+              <span className="text-gray-600 dark:text-gray-400">
+                {tinderToken ? 'Connected' : 'Connect Account'}
+              </span>
+            </div>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <TinderAuthModal 
+              onTokenReceived={handleTokenReceived}
+              trigger={
+                <Button 
+                  variant={tinderToken ? "outline" : "default"}
+                  className={tinderToken ? "" : "bg-gradient-to-r from-tinder-primary to-tinder-secondary hover:from-tinder-primary/90 hover:to-tinder-secondary/90"}
+                >
+                  <Key className="mr-2 h-4 w-4" />
+                  {tinderToken ? 'Update Token' : 'Connect Tinder Account'}
+                </Button>
+              }
+            />
           </div>
         </div>
 

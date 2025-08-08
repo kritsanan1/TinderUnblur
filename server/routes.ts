@@ -4,8 +4,12 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserPreferencesSchema, insertAnalyticsSchema, insertTeaserSchema, insertActivitySchema } from "@shared/schema";
 import { tinderService } from "./tinder-service";
+import authRoutes from "./auth-routes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Register authentication routes
+  app.use('/api', authRoutes);
   
   // Get user preferences
   app.get("/api/preferences/:userId", async (req, res) => {
