@@ -473,35 +473,6 @@ function makeSwipeDecision(user: any, preferences: any): boolean {
   return score >= thresholds[preferences.strategy];
 }
 
-    try {
-      const { userId, targetUserId, direction, tinderToken } = req.body;
-      
-      if (!tinderToken) {
-        return res.status(400).json({ message: "Tinder token required" });
-      }
-
-      tinderService.setToken(tinderToken);
-      const result = await tinderService.performSwipe(targetUserId, direction);
-      
-      if (!result) {
-        return res.status(500).json({ message: "Failed to perform swipe" });
-      }
-
-      // Log activity
-      await storage.createActivity({
-        userId,
-        type: direction === 'like' ? 'match' : 'pass',
-        title: direction === 'like' ? `Liked profile` : `Passed on profile`,
-        icon: direction === 'like' ? 'fas fa-heart' : 'fas fa-times',
-      });
-
-      res.json(result);
-    } catch (error) {
-      console.error("Swipe error:", error);
-      res.status(500).json({ message: "Failed to perform swipe" });
-    }
-  });
-
   // Perform super like (real API)
   app.post("/api/tinder/superlike", async (req, res) => {
     try {
