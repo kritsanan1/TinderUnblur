@@ -251,7 +251,7 @@ function AdvancedAnalyticsContent({ userId }: AdvancedAnalyticsProps) {
               </ul>
             </div>
           </div>
-          
+
           <Button className="w-full mt-4 bg-gradient-to-r from-tinder-primary to-tinder-secondary text-white hover:scale-105 transition-transform">
             <Users className="mr-2 h-4 w-4" />
             View Detailed Analytics Report

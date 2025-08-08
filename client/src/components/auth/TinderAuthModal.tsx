@@ -120,7 +120,7 @@ export function TinderAuthModal({ onTokenReceived, trigger }: TinderAuthModalPro
     try {
       const response = await apiRequest('/api/auth/phone/send-otp', {
         method: 'POST',
-        body: data
+        body: { phoneNumber: data.phoneNumber }
       }) as AuthResponse
 
       if (response.success && response.data?.sms_sent) {
