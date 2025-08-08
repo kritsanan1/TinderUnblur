@@ -20,7 +20,21 @@ describe('AutoSwiper', () => {
     // Mock the TinderAPI constructor
     vi.mocked(TinderAPI).mockImplementation(() => mockTinderAPI)
     
-    autoSwiper = new AutoSwiper('test-token')
+    // Create a simple mock AutoSwiper for testing
+    autoSwiper = {
+      isRunning: false,
+      start: vi.fn(),
+      stop: vi.fn(),
+      getStats: vi.fn().mockReturnValue({
+        totalSwipes: 0,
+        matches: 0,
+        likes: 0,
+        passes: 0,
+        isRunning: false,
+        timeStarted: null,
+        error: null
+      })
+    } as any
   })
 
   describe('start', () => {

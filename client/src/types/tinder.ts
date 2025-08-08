@@ -55,6 +55,8 @@ export interface TinderRecommendationsResponse {
 export interface TinderMatchResponse {
   match: boolean;
   likes_remaining?: number;
+  "X-Padding"?: string;
+  rate_limited_until?: number;
   super_likes?: {
     remaining: number;
     alc_remaining: number;

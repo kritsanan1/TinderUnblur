@@ -3,23 +3,30 @@ import request from 'supertest'
 import express, { type Express } from 'express'
 import { registerRoutes } from '../../server/routes'
 
-// Mock storage
-const mockStorage = {
-  getUserPreferences: vi.fn(),
-  createUserPreferences: vi.fn(),
-  updateUserPreferences: vi.fn(),
-  getLatestAnalytics: vi.fn(),
-  createAnalytics: vi.fn(),
-  updateAnalytics: vi.fn(),
-  getTeasers: vi.fn(),
-  createTeaser: vi.fn(),
-  getActivities: vi.fn(),
-  createActivity: vi.fn(),
-}
+// Mock storage - move to top level
+vi.mock('../../server/storage', () => {
+  const mockStorage = {
+    getUserPreferences: vi.fn(),
+    createUserPreferences: vi.fn(),
+    updateUserPreferences: vi.fn(),
+    getLatestAnalytics: vi.fn(),
+    createAnalytics: vi.fn(),
+    updateAnalytics: vi.fn(),
+    getTeasers: vi.fn(),
+    createTeaser: vi.fn(),
+    getActivities: vi.fn(),
+    createActivity: vi.fn(),
+    getUserTeasers: vi.fn(),
+    getUserActivities: vi.fn(),
+    updateUserTinderToken: vi.fn(),
+  }
+  
+  return { storage: mockStorage }
+})
 
-vi.mock('../../server/storage', () => ({
-  storage: mockStorage
-}))
+// Get the mocked storage instance
+const mockStorageModule = await import('../../server/storage')
+const mockStorage = mockStorageModule.storage as any
 
 describe('API Routes', () => {
   let app: Express
