@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { APIError, withErrorHandling } from './error-handling';
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -8,22 +9,41 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest(
-  method: string,
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   url: string,
-  data?: unknown | undefined,
+  body?: any
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  return withErrorHandling(async () => {
+    const config: RequestInit = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
 
-  await throwIfResNotOk(res);
-  return res;
+    if (body) {
+      config.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // Use default error message if response isn't JSON
+      }
+
+      throw new APIError(errorMessage, response.status);
+    }
+
+    return response;
+  }, `API ${method} ${url}`);
 }
 
-type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =

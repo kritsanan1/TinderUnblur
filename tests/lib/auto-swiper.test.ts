@@ -20,75 +20,57 @@ describe('AutoSwiper', () => {
     // Mock the TinderAPI constructor
     vi.mocked(TinderAPI).mockImplementation(() => mockTinderAPI)
     
-    // Create a simple mock AutoSwiper for testing
-    autoSwiper = {
-      isRunning: false,
-      start: vi.fn(),
-      stop: vi.fn(),
-      getStats: vi.fn().mockReturnValue({
-        totalSwipes: 0,
-        matches: 0,
-        likes: 0,
-        passes: 0,
-        isRunning: false,
-        timeStarted: null,
-        error: null
-      })
-    } as any
+    // Create AutoSwiper instance with test config
+    const testConfig = {
+      enabled: true,
+      dailyLimit: 10,
+      swipeInterval: 1,
+      ageRange: [22, 35] as [number, number],
+      distanceLimit: 50,
+      filters: {
+        verifiedOnly: false,
+        photoQuality: false,
+        bioRequired: false
+      },
+      strategy: 'moderate' as const
+    }
+    
+    autoSwiper = new AutoSwiper('test-token', testConfig)
   })
 
   describe('start', () => {
-    it('should start auto-swiping with provided settings', async () => {
+    it('should start auto-swiping and process recommendations', async () => {
       const mockRecommendations = {
         meta: { status: 200 },
         data: {
           results: [
             {
-              type: 'user',
-              user: {
-                _id: 'user1',
-                name: 'Test User',
-                age: 25,
-                verified: true,
-                photos: [{ id: 'photo1' }],
-                bio: 'Test bio'
-              }
+              _id: 'user1',
+              name: 'Test User',
+              birth_date: '1998-01-01',
+              verified: true,
+              photos: [{ id: 'photo1' }, { id: 'photo2' }, { id: 'photo3' }],
+              bio: 'This is a detailed bio about the user',
+              distance_mi: 10
             }
           ]
         }
       }
 
-      const settings = {
-        enabled: true,
-        dailyLimit: 10,
-        swipeInterval: 1,
-        ageMin: 22,
-        ageMax: 35,
-        verifiedOnly: true,
-        photoQuality: true,
-        bioRequired: true
-      }
-
       mockTinderAPI.getRecommendations.mockResolvedValue(mockRecommendations)
       mockTinderAPI.swipe.mockResolvedValue({ match: false, likes_remaining: 99 })
 
-      const onProgress = vi.fn()
-      autoSwiper.start(settings, onProgress)
+      // Start auto-swiper
+      const startPromise = autoSwiper.start()
 
-      // Wait for initial execution
+      // Wait for processing
       await new Promise(resolve => setTimeout(resolve, 100))
 
       expect(mockTinderAPI.getRecommendations).toHaveBeenCalled()
       expect(mockTinderAPI.swipe).toHaveBeenCalledWith('user1', 'like')
-      expect(onProgress).toHaveBeenCalledWith(
-        expect.objectContaining({
-          totalSwipes: 1,
-          matches: 0,
-          isRunning: true
-        })
-      )
 
       autoSwiper.stop()
+      await startPromise
     })
 
     it('should filter users based on settings', async () => {
