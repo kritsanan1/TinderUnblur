@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "../ui/card";
 import { Heart, Percent, Eye, Star } from "lucide-react";
-import { Analytics } from "@shared/schema";
+import { Analytics } from "../../../../shared/schema";
 
 interface StatsOverviewProps {
   userId: string;
@@ -31,7 +31,7 @@ export function StatsOverview({ userId }: StatsOverviewProps) {
   const stats = [
     {
       title: "Total Matches",
-      value: analytics?.matches.toLocaleString() || "0",
+      value: analytics?.matches?.toLocaleString() || "0",
       change: "+12.5%",
       changeType: "positive" as const,
       icon: Heart,
@@ -47,7 +47,7 @@ export function StatsOverview({ userId }: StatsOverviewProps) {
     },
     {
       title: "Profile Views",
-      value: analytics?.profileViews.toLocaleString() || "0",
+      value: analytics?.profileViews?.toLocaleString() || "0",
       change: "-2.1%",
       changeType: "negative" as const,
       icon: Eye,
@@ -55,7 +55,7 @@ export function StatsOverview({ userId }: StatsOverviewProps) {
     },
     {
       title: "Profile Score",
-      value: analytics?.profileScore.toString() || "0",
+      value: analytics?.profileScore?.toString() || "0",
       change: "Perfect",
       changeType: "perfect" as const,
       icon: Star,

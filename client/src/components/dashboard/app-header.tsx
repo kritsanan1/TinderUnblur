@@ -1,5 +1,5 @@
-import { useTheme } from "@/components/theme-provider";
-import { Button } from "@/components/ui/button";
+import { useTheme } from "../theme-provider";
+import { Button } from "../ui/button";
 import { Flame, Moon, Sun } from "lucide-react";
 
 export function AppHeader() {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { Plus, Wand2, Bot, BarChart3 } from "lucide-react";
 
 export function FloatingActionButton() {

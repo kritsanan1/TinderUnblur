@@ -53,4 +53,69 @@ export class TinderAPI {
 
     return response.json();
   }
+
+  async getRecommendations(): Promise<any> {
+    const response = await fetch("https://api.gotinder.com/v2/recs/core", {
+      headers: {
+        "X-Auth-Token": this.token,
+        platform: "android",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Tinder API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async superLike(userId: string): Promise<any> {
+    const response = await fetch(`https://api.gotinder.com/like/${userId}/super`, {
+      method: "POST",
+      headers: {
+        "X-Auth-Token": this.token,
+        platform: "android",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Tinder API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async getMatches(): Promise<any> {
+    const response = await fetch("https://api.gotinder.com/v2/matches", {
+      headers: {
+        "X-Auth-Token": this.token,
+        platform: "android",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Tinder API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async updateLocation(lat: number, lon: number): Promise<any> {
+    const response = await fetch("https://api.gotinder.com/user/ping", {
+      method: "POST",
+      headers: {
+        "X-Auth-Token": this.token,
+        platform: "android",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ lat, lon }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Tinder API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
 }

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Activity } from "@shared/schema";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Activity } from "../../../../shared/schema";
 import { Heart, TrendingUp, Bot, Wand2, MessageCircle } from "lucide-react";
 
 interface ActivityFeedProps {

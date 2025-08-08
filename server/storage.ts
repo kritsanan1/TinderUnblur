@@ -69,6 +69,7 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id, 
+      tinderToken: insertUser.tinderToken || null,
       createdAt: new Date()
     };
     this.users.set(id, user);
@@ -92,7 +93,18 @@ export class MemStorage implements IStorage {
 
   async createUserPreferences(prefs: InsertUserPreferences & { userId: string }): Promise<UserPreferences> {
     const id = randomUUID();
-    const userPrefs: UserPreferences = { ...prefs, id };
+    const userPrefs: UserPreferences = { 
+      ...prefs, 
+      id,
+      autoSwipeEnabled: prefs.autoSwipeEnabled || null,
+      dailyLimit: prefs.dailyLimit || null,
+      swipeInterval: prefs.swipeInterval || null,
+      ageMin: prefs.ageMin || null,
+      ageMax: prefs.ageMax || null,
+      verifiedOnly: prefs.verifiedOnly || null,
+      photoQuality: prefs.photoQuality || null,
+      bioRequired: prefs.bioRequired || null
+    };
     this.userPreferences.set(id, userPrefs);
     return userPrefs;
   }
@@ -122,7 +134,12 @@ export class MemStorage implements IStorage {
     const analyticsData: Analytics = { 
       ...analytics, 
       id, 
-      date: new Date()
+      date: new Date(),
+      matches: analytics.matches || null,
+      profileViews: analytics.profileViews || null,
+      swipes: analytics.swipes || null,
+      matchRate: analytics.matchRate || null,
+      profileScore: analytics.profileScore || null
     };
     this.analytics.set(id, analyticsData);
     return analyticsData;
@@ -139,7 +156,10 @@ export class MemStorage implements IStorage {
     const teaserData: Teaser = { 
       ...teaser, 
       id, 
-      createdAt: new Date()
+      createdAt: new Date(),
+      teaserData: teaser.teaserData || null,
+      isUnblurred: teaser.isUnblurred || null,
+      unblurredAt: teaser.unblurredAt || null
     };
     this.teasers.set(id, teaserData);
     return teaserData;
@@ -170,7 +190,9 @@ export class MemStorage implements IStorage {
     const activityData: Activity = { 
       ...activity, 
       id, 
-      createdAt: new Date()
+      createdAt: new Date(),
+      icon: activity.icon || null,
+      description: activity.description || null
     };
     this.activities.set(id, activityData);
     return activityData;

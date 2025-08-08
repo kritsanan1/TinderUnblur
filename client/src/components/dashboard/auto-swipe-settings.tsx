@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { UserPreferences } from "@shared/schema";
+import { Card, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { Slider } from "../ui/slider";
+import { Input } from "../ui/input";
+import { Checkbox } from "../ui/checkbox";
+import { useToast } from "../../hooks/use-toast";
+import { apiRequest } from "../../lib/queryClient";
+import { UserPreferences } from "../../../../shared/schema";
 import { Bot } from "lucide-react";
 
 interface AutoSwipeSettingsProps {
